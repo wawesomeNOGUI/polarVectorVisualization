@@ -11,6 +11,10 @@ const vectorsPerRotation = 20; // how many vectors to draw in one rotation
 const numOfRings = 5; // how many rings of vectors to draw
 const ringSpacing = 50; // spacing between rings
 var angStep = 2*Math.PI / vectorsPerRotation;
+
+// for vector A we have the radial component Ar and the angle component Ap (A phi)
+var Ar = 0;
+var Ap = 10;
 //==================================================
 
 var canvas = document.getElementById("myCanvas");
@@ -23,7 +27,8 @@ canvas.style.height = ""+ window.innerHeight +"px"; // ***TODO: maybe stretch ca
 
 // put canvas origin in middle and flip canvas so positive y-axis is up
 ctx.translate(canvas.width/2, canvas.height/2);
-ctx.rotate(Math.PI);
+// ctx.rotate(Math.PI);
+ctx.scale(1,-1);
 
 // draw axis
 ctx.fillStyle = "#FF0000";
@@ -31,11 +36,13 @@ ctx.fillRect(0, -canvas.height/2, 1, canvas.height);
 ctx.fillRect(-canvas.width/2, 0, canvas.width, 1);
 
 // draw axis labels (rotate to make text correct way)
-ctx.rotate(Math.PI);
+ctx.scale(1,-1);
 ctx.font = "20px Courier";
 ctx.fillText("Y", 0, -canvas.height/2 + 20);
 ctx.fillText("X", canvas.width/2 - 20, -5);
-ctx.rotate(Math.PI);
+ctx.scale(1,-1);
+
+// ctx.fillRect(15, 15, 5, 5);
 
 // draw vector field created by the polar vector (similar to cylindrical, but just ignoring z component)
 ctx.fillStyle = "#00FF00";
@@ -45,7 +52,26 @@ for (var i = 1; i < numOfRings; i++) {
 
     for (var j = 0; j < vectorsPerRotation; j++) {
         var r = ringSpacing * i;
-        ctx.fillRect(Math.cos(ang) * r, Math.sin(ang) * r, 1, 1);
+
+        var x1 = Math.cos(ang) * r; // tail of vector
+        var y1 = Math.sin(ang) * r;
+
+        // // phi unit vector perpendicular to r counterclockwise
+        // var Up = x1
+
+        // var x2 = x1 + ; // head of vector
+        // var y2 = Math.sin(ang) * r;
+
+        ctx.fillRect(x1, y1, 2, 2);
+
+        // draw r unit vector and phi unit vector (scale up a bit to make visible)
+        var rX = Math.cos(ang) * 5;
+        var rY = Math.sin(ang) * 5;
+        var phiX = -rY;
+        var phiY = rX;
+
+        ctx.fillRect(x1 + rX, y1 + rY, 2, 2);
+        ctx.fillRect(x1 + phiX, y1 + phiY, 2, 2);
 
         ang += angStep;
     }
