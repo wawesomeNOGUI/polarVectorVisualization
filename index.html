@@ -54,16 +54,19 @@ for (var i = 1; i < numOfRings; i++) {
 
     for (var j = 0; j < vectorsPerRotation; j++) {
         // set vector components for vecotor A, can be constant or depend on phi
-        // var Ar = 10;
-        // var Ap = 10;
+        var Ar = 10;
+        var Ap = 10;
 
-        // example of constant vector from example 1.19 in Engineering Electromagnetics 4th edition - Nathan Ida
-        var Ar = 1/3 * (2 * Math.cos(phi) + Math.sin(phi));
-        var Ap = -1/3 * (2 * Math.sin(phi) - Math.cos(phi));
+        //====================
+        // // example of constant vector from example 1.19 in Engineering Electromagnetics 4th edition - Nathan Ida
+        // var Ar = 1/3 * (2 * Math.cos(phi) + Math.sin(phi));
+        // var Ap = -1/3 * (2 * Math.sin(phi) - Math.cos(phi));
 
-        // scale Ap and Ar to make visible
-        Ar *= 20;
-        Ap *= 20;
+        // // scale Ap and Ar to make visible
+        // Ar *= 20;
+        // Ap *= 20;
+        //====================
+
 
         var r = ringSpacing * i;
 
@@ -85,8 +88,16 @@ for (var i = 1; i < numOfRings; i++) {
         var phiY = rX;
 
         // draw r unit vector and phi unit vector (scale up a bit to make visible)
-        ctx.fillRect(x1 + rX*5, y1 + rY*5, lineWidth, lineWidth);
-        ctx.fillRect(x1 + phiX*5, y1 + phiY*5, lineWidth, lineWidth);
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "#FF0000";
+        ctx.beginPath(); // Start a new path
+        ctx.moveTo(x1, y1); // Move the pen to tail of vecotr
+        ctx.lineTo(x1 + rX*10, y1 + rY*10); // Draw a line to head of r unit vector
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x1 + phiX*10, y1 + phiY*10); // Draw a line to head of phi unit vector
+        ctx.stroke(); // Render the path    
+        // ctx.fillRect(x1 + rX*5, y1 + rY*5, lineWidth, lineWidth);
+        // ctx.fillRect(x1 + phiX*5, y1 + phiY*5, lineWidth, lineWidth);
 
         // find head of vector using the phi and r components
         var vX = rX * Ar + phiX * Ap;
