@@ -1,9 +1,72 @@
 <html>
-<body style="margin: 0; padding: 0; overflow: hidden; background-color: rgb(255, 255, 255);">
-    <center>
-        <!-- TODO: Add user inputs to redraw in realtime <input id=""></input> -->
-        <canvas id="myCanvas" style="margin: 0; padding: 0; background-color: rgb(0, 0, 0);"></canvas>
-    </center>
+<body style="margin: 0; padding: 0; background-color: rgb(255, 255, 255);">
+    <style>
+        .label {
+            padding: 1%;
+            float: left;
+            position: relative;
+        }
+        .numDisplayDiv {
+            padding: 1%;
+            margin-left: 5%; 
+            height: 20;
+            width: 20%;
+            float: left;
+            border: 1px solid black;
+            position: relative;
+            overflow-x: scroll;
+        }
+
+        .graphCanvas {
+            float: right;
+            margin-right: 20%; 
+            padding: 0; 
+            background-color: rgb(0, 0, 0);
+            position: relative;
+        }
+    </style>
+
+    <canvas class="graphCanvas" id="myCanvas"></canvas>
+
+    
+    <div class="label">
+        <h1>Graph Vector A(r, phi)</h1>
+    </div>
+
+    <!--
+        Vector components.
+        Default value is example of constant vector from example 1.19 in Engineering Electromagnetics 4th edition - Nathan Ida
+        // var Ar = 1/3 * (2 * Math.cos(phi) + Math.sin(phi));
+        // var Ap = -1/3 * (2 * Math.sin(phi) - Math.cos(phi));
+        //====================
+    -->
+
+    <div class="label">
+        <h1>Component Ar</h1>
+    </div>
+
+    <div class="numDisplayDiv" id="Ar" contentEditable="true" oninput="redraw();">
+        1/3 * (2 * Math.cos(phi) + Math.sin(phi));
+    </div>
+
+    <div class="label">
+        <h1>Component Aphi</h1>
+    </div>
+
+    <div class="numDisplayDiv" id="Ap" contentEditable="true" oninput="redraw();">
+        -1/3 * (2 * Math.sin(phi) - Math.cos(phi));
+    </div>
+
+    <div class="label">
+        <h1>Vector Scale</h1>
+    </div>
+
+    <div class="numDisplayDiv" id="Ascale" contentEditable="true" oninput="redraw();">
+        20
+    </div>
+
+    <!-- TODO: Add user inputs to redraw in realtime <input id=""></input> -->
+    
 <script>
 
 //===================Settings=======================
@@ -32,98 +95,90 @@ ctx.translate(canvas.width/2, canvas.height/2);
 // ctx.rotate(Math.PI);
 ctx.scale(1,-1);
 
-// draw axis
-ctx.fillStyle = "#FF0000";
-ctx.fillRect(0, -canvas.height/2, 1, canvas.height);
-ctx.fillRect(-canvas.width/2, 0, canvas.width, 1);
+function redraw() {
+    ctx.clearRect(-canvas.width/2, -canvas.height/2, canvas.width, canvas.height);
 
-// draw axis labels (rotate to make text correct way)
-ctx.scale(1,-1);
-ctx.font = "20px Courier";
-ctx.fillText("Y", 0, -canvas.height/2 + 20);
-ctx.fillText("X", canvas.width/2 - 20, -5);
-ctx.scale(1,-1);
+    // draw axis
+    ctx.fillStyle = "#FF0000";
+    ctx.fillRect(0, -canvas.height/2, 1, canvas.height);
+    ctx.fillRect(-canvas.width/2, 0, canvas.width, 1);
 
-// ctx.fillRect(15, 15, 5, 5);
+    // draw axis labels (rotate to make text correct way)
+    ctx.scale(1,-1);
+    ctx.font = "20px Courier";
+    ctx.fillText("Y", 0, -canvas.height/2 + 20);
+    ctx.fillText("X", canvas.width/2 - 20, -5);
+    ctx.scale(1,-1);
 
-// draw vector field created by the polar vector (similar to cylindrical, but just ignoring z component)
-ctx.fillStyle = "#00FF00";
+    // draw vector field created by the polar vector (similar to cylindrical, but just ignoring z component)
+    ctx.fillStyle = "#00FF00";
 
-for (var i = 1; i < numOfRings; i++) {
-    var phi = 0;
+    for (var i = 1; i < numOfRings; i++) {
+        var phi = 0;
 
-    for (var j = 0; j < vectorsPerRotation; j++) {
-        // set vector components for vecotor A, can be constant or depend on phi
-        var Ar = 10;
-        var Ap = 10;
+        for (var j = 0; j < vectorsPerRotation; j++) {
+            // set vector components for vecotor A, can be constant or depend on phi
+            var Ar = eval(document.getElementById("Ar").textContent);
+            var Ap = eval(document.getElementById("Ap").textContent);
 
-        //====================
-        // // example of constant vector from example 1.19 in Engineering Electromagnetics 4th edition - Nathan Ida
-        // var Ar = 1/3 * (2 * Math.cos(phi) + Math.sin(phi));
-        // var Ap = -1/3 * (2 * Math.sin(phi) - Math.cos(phi));
-
-        // // scale Ap and Ar to make visible
-        // Ar *= 20;
-        // Ap *= 20;
-        //====================
+            // scale Ap and Ar to make visible
+            Ar *= document.getElementById("Ascale").textContent;
+            Ap *= document.getElementById("Ascale").textContent;
 
 
-        var r = ringSpacing * i;
+            var r = ringSpacing * i;
 
-        var x1 = Math.cos(phi) * r; // tail of vector
-        var y1 = Math.sin(phi) * r;
+            var x1 = Math.cos(phi) * r; // tail of vector
+            var y1 = Math.sin(phi) * r;
 
-        // // phi unit vector perpendicular to r counterclockwise
-        // var Up = x1
+            // // phi unit vector perpendicular to r counterclockwise
+            // var Up = x1
 
-        // var x2 = x1 + ; // head of vector
-        // var y2 = Math.sin(phi) * r;
+            // var x2 = x1 + ; // head of vector
+            // var y2 = Math.sin(phi) * r;
 
-        ctx.fillRect(x1, y1, lineWidth, lineWidth);
+            ctx.fillRect(x1, y1, lineWidth, lineWidth);
 
-        // polar unit vectors (non constant since depend on phi)
-        var rX = Math.cos(phi);
-        var rY = Math.sin(phi);
-        var phiX = -rY;
-        var phiY = rX;
+            // polar unit vectors (non constant since depend on phi)
+            var rX = Math.cos(phi);
+            var rY = Math.sin(phi);
+            var phiX = -rY;
+            var phiY = rX;
 
-        // draw r unit vector and phi unit vector (scale up a bit to make visible)
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = "#FF0000";
-        ctx.beginPath(); // Start a new path
-        ctx.moveTo(x1, y1); // Move the pen to tail of vecotr
-        ctx.lineTo(x1 + rX*10, y1 + rY*10); // Draw a line to head of r unit vector
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(x1 + phiX*10, y1 + phiY*10); // Draw a line to head of phi unit vector
-        ctx.stroke(); // Render the path    
-        // ctx.fillRect(x1 + rX*5, y1 + rY*5, lineWidth, lineWidth);
-        // ctx.fillRect(x1 + phiX*5, y1 + phiY*5, lineWidth, lineWidth);
+            // draw r unit vector and phi unit vector (scale up a bit to make visible)
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = "#FF0000";
+            ctx.beginPath(); // Start a new path
+            ctx.moveTo(x1, y1); // Move the pen to tail of vecotr
+            ctx.lineTo(x1 + rX*10, y1 + rY*10); // Draw a line to head of r unit vector
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x1 + phiX*10, y1 + phiY*10); // Draw a line to head of phi unit vector
+            ctx.stroke(); // Render the path    
+            // ctx.fillRect(x1 + rX*5, y1 + rY*5, lineWidth, lineWidth);
+            // ctx.fillRect(x1 + phiX*5, y1 + phiY*5, lineWidth, lineWidth);
 
-        // find head of vector using the phi and r components
-        var vX = rX * Ar + phiX * Ap;
-        var vY = rY * Ar + phiY * Ap;
+            // find head of vector using the phi and r components
+            var vX = rX * Ar + phiX * Ap;
+            var vY = rY * Ar + phiY * Ap;
 
-        // draw vector at rendered point to visulize
-        ctx.lineWidth = lineWidth;
-        ctx.strokeStyle = "#FF00FF";
-        ctx.beginPath(); // Start a new path
-        ctx.moveTo(x1, y1); // Move the pen to tail of vecotr
-        ctx.lineTo(x1 + vX, y1 + vY); // Draw a line to head of vector
-        ctx.stroke(); // Render the path    
+            // draw vector at rendered point to visulize
+            ctx.lineWidth = lineWidth;
+            ctx.strokeStyle = "#FF00FF";
+            ctx.beginPath(); // Start a new path
+            ctx.moveTo(x1, y1); // Move the pen to tail of vecotr
+            ctx.lineTo(x1 + vX, y1 + vY); // Draw a line to head of vector
+            ctx.stroke(); // Render the path    
 
-        phi += angStep;
+            phi += angStep;
+        }
     }
 }
+redraw();
 
-
-
-// setInterval(render, 10);
-// gameLoop();
-
-window.addEventListener("resize", function(e) {
-    canvas.style.width = ""+ window.innerHeight +"px";
-    canvas.style.height = ""+ window.innerHeight +"px";
-});
+// window.addEventListener("resize", function(e) {
+//     canvas.style.width = ""+ window.innerHeight +"px";
+//     canvas.style.height = ""+ window.innerHeight +"px";
+// });
 
 // window.addEventListener("contextmenu", function(e) {
 //     e.preventDefault();   //stops right click bringing up a menu
